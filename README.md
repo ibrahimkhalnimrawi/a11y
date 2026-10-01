@@ -11,7 +11,7 @@ Vanilla JavaScript. No dependencies, no build step, no framework.
 <script src="accessibility.js" data-a11y-auto></script>
 ```
 
-**[Live demo](demo/)** — a deliberately inaccessible test page with the widget on it.
+**[Live demo](https://ibrahimkhalnimrawi.github.io/a11y/demo/)** — a deliberately inaccessible test page with the widget on it.
 Open it, toggle the hostile stylesheet, switch between English and Arabic (`?lang=ar`
 links straight to Arabic), and try the panel
 (or press <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>A</kbd>).
@@ -91,6 +91,92 @@ Tag attributes mirror the main options: `data-a11y-position`, `data-a11y-lang`,
 `data-a11y-fonts`, `data-a11y-shortcut`, `data-a11y-statement`,
 `data-a11y-exclude` (comma-separated), `data-a11y-filter-target`,
 `data-a11y-root-id`, `data-a11y-auto-os`.
+
+---
+
+## Styling and theming
+
+The panel lives in a shadow root, so your site's CSS cannot reach its internals by
+accident. There are two deliberate ways in.
+
+### 1. Colour tokens (recommended)
+
+The panel is drawn from a small set of CSS custom properties. Set them on the
+widget's root element from **your own stylesheet**:
+
+```css
+#a11y-root {
+  --p-accent: #b00020;      /* floating button, primary button, active options */
+  --p-accent-fg: #ffffff;   /* text and icon on the accent colour */
+  --p-focus: #b00020;       /* keyboard focus ring */
+}
+```
+
+Normal declarations from the page beat the widget's built-in defaults, so no
+`!important` is needed. A rule like this applies in light **and** dark mode; to
+theme them separately, wrap the dark values in a media query:
+
+```css
+@media (prefers-color-scheme: dark) {
+  #a11y-root { --p-accent: #ff8a80; --p-accent-fg: #1a0000; --p-focus: #ff8a80; }
+}
+```
+
+| Token | Light default | Dark default | Used for |
+|---|---|---|---|
+| `--p-bg` | `#ffffff` | `#15181e` | Panel and card background |
+| `--p-fg` | `#16181d` | `#f2f4f8` | Main text |
+| `--p-muted` | `#5b6472` | `#a3adbd` | Hints and secondary text |
+| `--p-line` | `#d8dde5` | `#333a47` | Borders and dividers |
+| `--p-raise` | `#f4f6fa` | `#1e232c` | Hover background of buttons and options |
+| `--p-accent` | `#0a58ff` | `#5b93ff` | Floating button, primary button, selected options, sliders |
+| `--p-accent-fg` | `#ffffff` | `#0b1020` | Text and icons on the accent colour |
+| `--p-on` | `#0f7a3d` | `#4ade80` | Switches in the "on" state |
+| `--p-focus` | `#0a58ff` | `#8ab4ff` | Focus ring |
+| `--p-shadow` | soft shadow | deeper shadow | Floating button and panel shadow |
+| `--p-radius` | `12px` | — | Corner radius of the system-settings suggestion card |
+
+Keep the contrast: `--p-accent-fg` on `--p-accent` and `--p-fg` on `--p-bg` should
+stay at **4.5:1 or more**. An accessibility panel that fails contrast is the one
+place it is least forgivable.
+
+> Use a stylesheet, not an inline `style` attribute on `#a11y-root` — the widget
+> strips inline styles from its root on purpose, as part of its isolation hardening.
+> If you changed `rootId`, use that id in the selector.
+
+### 2. Extra CSS inside the panel (advanced)
+
+For anything the tokens do not cover — size or offset of the floating button,
+fonts, spacing — add a stylesheet into the widget's (open) shadow root once it is
+ready. It persists across language switches and panel rebuilds.
+
+```js
+document.addEventListener('a11y:ready', function () {
+  var style = document.createElement('style');
+  style.textContent =
+    '.a11y-fab { inline-size: 48px; block-size: 48px; }' +              /* smaller button */
+    '.a11y-fab[data-pos^="bottom-"] { inset-block-end: 96px; }' +       /* clear a chat bubble */
+    '.a11y-dialog { font-family: "Inter", system-ui, sans-serif; }';
+  document.getElementById('a11y-root').shadowRoot.appendChild(style);
+});
+```
+
+The widget initialises on `DOMContentLoaded`, so register the listener in a script
+that runs before then (for example right after the widget's `<script>` tag).
+
+Main class names: `.a11y-fab` (floating button), `.a11y-dialog` (panel),
+`.a11y-head` / `.a11y-title` / `.a11y-body` / `.a11y-foot` (panel sections),
+`.a11y-group` (setting groups), `.a11y-profile` (quick-profile cards),
+`.a11y-row` / `.a11y-label` / `.a11y-hint` (one setting), `.a11y-switch`,
+`.a11y-radio`, `.a11y-range`, `.a11y-btn` / `.a11y-btn.is-primary`,
+`.a11y-search`, `.a11y-suggest` (system-settings suggestion card).
+
+Class names are an internal surface: they are stable within a major version but
+may change in a major release. The colour tokens are the supported contract.
+
+The **position** of the button (`bottom-right`, `bottom-left`, `top-right`,
+`top-left`) and its **stacking order** (`zIndex`) are plain options — see
+[Configuration](#configuration).
 
 ---
 
@@ -256,8 +342,6 @@ Chrome / Edge 90+, Firefox 90+, Safari 15.4+. Degrades rather than breaks:
 - No `popover` → the button renders normally and is affected by active colour filters (cosmetic only).
 - No `<dialog>.showModal` → a manual APG focus trap takes over.
 - No `localStorage` (private mode throws on write) → `sessionStorage` → in-memory. Settings work; they just stop surviving a reload.
-
----
 
 ---
 
