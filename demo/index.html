@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title data-i18n="title">Accessibility widget — hostile test page</title>
+
+<style>
+  /* ---------------------------------------------------------------------
+     This page is deliberately badly built. Every defect below is one the
+     widget has to survive or repair, and they are all things real sites do.
+     --------------------------------------------------------------------- */
+
+  :root { --brand: #6b4de6; }
+
+  /* px-based sizing throughout: this is why `html { font-size }` scaling does
+     not work and the widget measures each element instead. */
+  body {
+    margin: 0;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 15px;
+    line-height: 1.35;
+    color: #6a7080;               /* low contrast on white — deliberately poor */
+    background: #fff;
+  }
+
+  /* A fixed header. This is the element that breaks when a CSS filter is put
+     on an ancestor, so it is the canary for the colour-filter trade-off. */
+  header.site {
+    position: fixed; top: 0; left: 0; right: 0; height: 58px;
+    display: flex; align-items: center; gap: 18px; padding: 0 20px;
+    background: var(--brand); color: #cbb9ff; z-index: 50;
+  }
+  header.site a { color: #d9ccff; text-decoration: none; font-size: 14px; }
+  main { max-width: 760px; margin: 0 auto; padding: 84px 20px 60px; }
+
+  h1 { font-size: 30px; color: #2c2f38; margin: 0 0 6px; }
+  h2 { font-size: 21px; color: #3a3e4a; margin: 34px 0 8px; }
+  h3 { font-size: 16px; color: #4a4f5c; margin: 22px 0 6px; }
+  p  { margin: 0 0 12px; }
+
+  /* Links that are colour-only — indistinguishable in greyscale, and the exact
+     case the "highlight links" feature exists for. */
+  main a { color: #7a63ea; text-decoration: none; }
+
+  /* The single most common keyboard accessibility defect on the web. */
+  a:focus, button:focus, input:focus, select:focus { outline: none !important; }
+
+  .card { border: 1px solid #e4e6ec; border-radius: 10px; padding: 16px; margin: 14px 0; }
+
+  /* Fixed-height container: text scaling will clip here. That is expected and
+     documented, not a bug in the widget. */
+  .clipbox { height: 68px; overflow: hidden; background: #f6f7fa;
+             border-radius: 8px; padding: 10px; }
+
+  button.plain { background: var(--brand); color: #fff; border: 0;
+                 padding: 9px 15px; border-radius: 7px; cursor: pointer; font-size: 14px; }
+
+  /* Motion: a pulse and a slide, both running forever. */
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .15; } }
+  @keyframes slide { from { transform: translateX(0); } to { transform: translateX(60px); } }
+  .pulsing { animation: pulse .7s infinite; display: inline-block;
+             background: #e11d48; color: #fff; padding: 5px 12px; border-radius: 6px;
+             font-weight: bold; }
+  .sliding { animation: slide 1.1s ease-in-out infinite alternate;
+             width: 40px; height: 12px; border-radius: 6px; background: var(--brand); }
+
+  /* An "advertisement" that the distraction filter should catch. */
+  .ad { background: #fff3cd; border: 2px dashed #d39e00; padding: 14px;
+        text-align: center; font-weight: bold; color: #7a5c00; }
+
+  footer.site { border-top: 1px solid #e4e6ec; padding: 20px; text-align: center;
+                font-size: 13px; color: #8a90a0; }
+
+  /* ---------------------------------------------------------------------
+     "Try to break the widget."
+     Everything here is aimed squarely at the panel. Inherited properties, a
+     scorched-earth reset, and direct rules on the widget's own root element.
+     The panel must survive all of it. Toggle with the button on the page.
+     --------------------------------------------------------------------- */
+  body.hostile,
+  body.hostile * {
+    font-family: 'Comic Sans MS', cursive !important;
+    letter-spacing: 4px !important;
+    word-spacing: 8px !important;
+    line-height: 3 !important;
+    text-transform: uppercase !important;
+  }
+  body.hostile { direction: rtl; }
+  /* Direct attacks on the widget root by id. */
+  body.hostile #a11y-root { display: none !important; visibility: hidden !important; }
+
+  /* Demo chrome, not part of the hostile page: the page-language switcher. */
+  .langs { margin-inline-start: auto; display: flex; gap: 4px; }
+  .langs button { background: transparent; color: #fff; border: 1px solid #cbb9ff;
+                  border-radius: 6px; padding: 5px 10px; cursor: pointer; font-size: 13px; }
+  .langs button[aria-pressed="true"] { background: #fff; color: var(--brand); font-weight: bold; }
+</style>
+</head>
+<body>
+
+<header class="site">
+  <strong style="color:#fff;font-size:16px">Northwind</strong>
+  <nav>
+    <a href="/" data-i18n="navHome">Home</a>
+    <a href="/products" data-i18n="navProducts">Products</a>
+    <a href="/demo/index.html" data-i18n="navDemo">Demo</a>
+    <a href="/contact" data-i18n="navContact">Contact</a>
+  </nav>
+  <!-- Filled by demo.js with one button per language in its table. -->
+  <div class="langs" id="langs" role="group" data-i18n-aria-label="langLabel" aria-label="Page language"></div>
+  <!-- No accessible name at all: no text, no aria-label, no title. -->
+  <button class="plain" onclick="void 0">
+    <img src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16'%3E%3Cpath d='M2 4h12M2 8h12M2 12h12' stroke='white' stroke-width='2'/%3E%3C/svg%3E">
+  </button>
+</header>
+
+<main>
+  <h1 data-i18n="h1">A page built the way real pages are built</h1>
+  <p data-i18n-html="intro">
+    Low-contrast body text, px-based sizing, colour-only
+    <a href="#anchor-one">links</a> with no underline, focus outlines removed,
+    images with no alternative text, buttons with no accessible name, animation
+    that never stops, and no <code>main</code> landmark until the screen reader
+    helper adds one. Every setting in the panel has something here to act on.
+  </p>
+
+  <div class="card">
+    <h2 data-i18n="controlsTitle">Controls to test</h2>
+    <p style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+      <button class="plain" id="hostile" data-i18n="hostileOn">Toggle the hostile stylesheet</button>
+      <button class="plain" id="addnodes" data-i18n="addNodes">Inject new content</button>
+    </p>
+    <p style="font-size:13px" data-i18n="addNodesHint">
+      “Inject new content” adds paragraphs after load — text scaling has to pick
+      them up through its mutation observer, not just on first pass.
+    </p>
+  </div>
+
+  <h2 id="anchor-one" data-i18n="motionTitle">Motion and flashing</h2>
+  <p>
+    <span class="pulsing" data-i18n="flashing">FLASHING</span>
+    <span data-i18n="motionText">a CSS pulse, a sliding block, and a real animated GIF at 10&nbsp;fps.</span>
+  </p>
+  <div class="sliding" aria-hidden="true"></div>
+  <p style="margin-top:12px">
+    <img src="flashing.gif" width="120" height="60">
+    <!-- No alt attribute, and it flashes. Two problems in one element. -->
+  </p>
+
+  <div class="ad" data-i18n="ad">ADVERTISEMENT — this should disappear under “reduce distractions”</div>
+
+  <h2 data-i18n="textTitle">Text and reading</h2>
+  <h3 data-i18n="h3">A third-level heading</h3>
+  <p data-i18n="textPara">
+    Line spacing, letter spacing and word spacing are all set on this paragraph
+    by the page's own stylesheet, so inherited values alone will not move them —
+    the widget has to force them per element. Alignment starts as the default.
+  </p>
+  <div class="clipbox" data-i18n-html="clipbox">
+    <strong>Fixed-height box.</strong> This container has a hard 68px height and
+    hidden overflow, so enlarging text will clip it. That is a real limit of
+    scaling text on a page that was not built to accommodate it.
+  </div>
+
+  <h2 data-i18n="formsTitle">Forms with no labels</h2>
+  <form class="card" onsubmit="return false">
+    <p><input type="text" placeholder="Your name" data-i18n-placeholder="namePlaceholder" name="fullname" style="padding:8px;width:60%"></p>
+    <p><input type="email" name="email_address" style="padding:8px;width:60%"></p>
+    <p><select name="topic" style="padding:8px"><option data-i18n="optSales">Sales</option><option data-i18n="optSupport">Support</option></select></p>
+    <p><button class="plain" type="submit" data-i18n="send">Send</button></p>
+  </form>
+
+  <h2 data-i18n="imagesTitle">Images</h2>
+  <p>
+    <img src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='90'%3E%3Crect width='180' height='90' fill='%236b4de6'/%3E%3Ctext x='90' y='52' font-size='15' fill='white' text-anchor='middle'%3ENo alt text%3C/text%3E%3C/svg%3E" width="180" height="90">
+    <img src="team-photo-2024_2x.png" width="180" height="90" style="background:#eee">
+    <!-- Broken src on purpose: the filename is all the screen reader helper has
+         to work with, which is exactly the situation it is built for. -->
+  </p>
+
+  <h2 data-i18n="colourTitle">Colour-only information</h2>
+  <p>
+    <span data-i18n="status">Status:</span> <span style="color:#16a34a;font-weight:bold" data-i18n="passing">Passing</span> ·
+    <span style="color:#dc2626;font-weight:bold" data-i18n="failing">Failing</span> ·
+    <span style="color:#ca8a04;font-weight:bold" data-i18n="pending">Pending</span>
+    <span data-i18n="colourText">— three states distinguished by hue alone, which is what the colour-blind
+    filters have to make separable.</span>
+  </p>
+
+  <h2 data-i18n="scrollTitle">A long section to scroll</h2>
+  <p data-i18n="scrollHint">Try “Field of view” and the “Magnifier” here, and arrow through sections with “Focus on a section”.</p>
+  <p data-i18n="filler1">The quick brown fox jumps over the lazy dog. Pack my box with five dozen liquor jugs.</p>
+  <p data-i18n="filler2">How vexingly quick daft zebras jump. Sphinx of black quartz, judge my vow.</p>
+  <p data-i18n="filler3">Waltz, bad nymph, for quick jigs vex. The five boxing wizards jump quickly.</p>
+</main>
+
+<footer class="site">
+  <p data-i18n="footer">Northwind — a fictional company on a deliberately inaccessible page.</p>
+</footer>
+
+<!-- The widget. data-a11y-auto initialises it straight from the tag. -->
+<script src="../accessibility.js"
+        data-a11y-auto
+        data-a11y-position="bottom-right"
+        data-a11y-fonts="../fonts/"></script>
+
+<script src="demo.js"></script>
+</body>
+</html>
