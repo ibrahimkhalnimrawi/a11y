@@ -32,10 +32,24 @@
  */
 (function (global, factory) {
   'use strict';
-  var api = factory(global);
+  /* No DOM (server-side rendering, Node, a bundler's prerender pass): export an
+   * inert stub so importing the package never throws. The real widget runs once
+   * the same code reaches a browser. */
+  var api = global && global.document ? factory(global) : serverStub();
   if (typeof module === 'object' && module.exports) module.exports = api;
   else if (typeof define === 'function' && define.amd) define(function () { return api; });
-  global.A11y = api;
+  if (global) global.A11y = api;
+
+  function serverStub() {
+    var stub = { version: '1.0.0' };
+    ['init', 'set', 'patch', 'reset', 'applyProfile', 'open', 'close', 'toggle',
+      'announce', 'setLanguage', 'destroy'].forEach(function (name) {
+      stub[name] = function () { return stub; };
+    });
+    stub.get = stub.env = function () { return undefined; };
+    stub.features = stub.profiles = function () { return []; };
+    return stub;
+  }
 }(typeof window !== 'undefined' ? window : this, function (window) {
   'use strict';
 

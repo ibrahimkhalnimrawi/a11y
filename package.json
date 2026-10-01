@@ -1,0 +1,39 @@
+{
+  "name": "@ibrahimkhalnimrawi/a11y",
+  "version": "1.0.0",
+  "description": "A drop-in accessibility widget for any website: text scaling, dyslexia fonts, contrast, colour-blind filters, reading mask, magnifier, keyboard navigation and read-aloud. Vanilla JS, no dependencies, English and Arabic built in.",
+  "main": "accessibility.js",
+  "types": "accessibility.d.ts",
+  "unpkg": "accessibility.js",
+  "jsdelivr": "accessibility.js",
+  "files": [
+    "accessibility.js",
+    "accessibility.d.ts",
+    "fonts/"
+  ],
+  "sideEffects": true,
+  "keywords": [
+    "accessibility",
+    "a11y",
+    "widget",
+    "dyslexia",
+    "contrast",
+    "color-blind",
+    "screen-reader",
+    "rtl",
+    "arabic"
+  ],
+  "author": "Ibrahim Alnimrawi",
+  "license": "MIT AND OFL-1.1",
+  "homepage": "https://ibrahimkhalnimrawi.github.io/a11y/demo/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ibrahimkhalnimrawi/a11y.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ibrahimkhalnimrawi/a11y/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
