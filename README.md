@@ -70,24 +70,24 @@ them side by side needs no configuration.
 No download needed — fonts resolve next to the script automatically:
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/@ibrahimkhalnimrawi/a11y@1/accessibility.js"
+<script src="https://cdn.jsdelivr.net/npm/@ibrahimalnimrawi/a11y@1/accessibility.js"
         data-a11y-auto></script>
 ```
 
 ### From npm
 
 ```bash
-npm install @ibrahimkhalnimrawi/a11y
+npm install @ibrahimalnimrawi/a11y
 ```
 
 ```js
-import A11y from '@ibrahimkhalnimrawi/a11y';
+import A11y from '@ibrahimalnimrawi/a11y';
 
 A11y.init({
   position: 'bottom-right',
   // A bundler cannot tell the widget where its fonts are. Either point at the CDN…
-  fontsPath: 'https://cdn.jsdelivr.net/npm/@ibrahimkhalnimrawi/a11y@1/fonts/'
-  // …or copy node_modules/@ibrahimkhalnimrawi/a11y/fonts/ into your public folder
+  fontsPath: 'https://cdn.jsdelivr.net/npm/@ibrahimalnimrawi/a11y@1/fonts/'
+  // …or copy node_modules/@ibrahimalnimrawi/a11y/fonts/ into your public folder
   // and use that path, e.g. fontsPath: '/fonts/a11y/'
 });
 ```
