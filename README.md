@@ -65,6 +65,37 @@ Copy `accessibility.js` and the `fonts/` directory to your server. If `fontsPath
 is not set, the widget resolves fonts relative to its own script URL, so keeping
 them side by side needs no configuration.
 
+### From a CDN
+
+No download needed — fonts resolve next to the script automatically:
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/@ibrahimkhalnimrawi/a11y@1/accessibility.js"
+        data-a11y-auto></script>
+```
+
+### From npm
+
+```bash
+npm install @ibrahimkhalnimrawi/a11y
+```
+
+```js
+import A11y from '@ibrahimkhalnimrawi/a11y';
+
+A11y.init({
+  position: 'bottom-right',
+  // A bundler cannot tell the widget where its fonts are. Either point at the CDN…
+  fontsPath: 'https://cdn.jsdelivr.net/npm/@ibrahimkhalnimrawi/a11y@1/fonts/'
+  // …or copy node_modules/@ibrahimkhalnimrawi/a11y/fonts/ into your public folder
+  // and use that path, e.g. fontsPath: '/fonts/a11y/'
+});
+```
+
+TypeScript definitions are included. Importing on the server (Next.js, Nuxt, any
+SSR) is safe: without a DOM the package exports an inert stub, and the real widget
+starts once the code runs in the browser — call `init()` from client-side code.
+
 ---
 
 ## Configuration
